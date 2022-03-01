@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+    <h2>brightness control</h2>
+    <input id="bg" type="range"><h3 id="valbg">50%</h3>
+    <h2>volume control</h2>
+    <input id='vol' type="range"><h3 id="valvo">50%</h3>
+    <script src="http://localhost:9998/socket.io/socket.io.js">
+    </script>
+    <script>
+      const cekIfValueChange = ()=>{
+      let bgOld = document.getElementById("bg").value
+      let vlOld = document.getElementById("vol").value
+      const socket = io.connect(null,{port:9998})
+      const watch = setInterval(()=>{
+        let bg = document.getElementById("bg").value
+        let vl = document.getElementById("vol").value
+        //console.log(bg)
+        if(bgOld != bg){
+          clearInterval(watch)
+          //console.log("kecerahan di ubah.")
+            document.getElementById("valbg").innerHTML = bg+"%"
+            console.log(bgOld)
+
+          socket.emit("data",JSON.stringify({bg}))
+          cekIfValueChange()
+        }
+      else if(vlOld != vl){
+              clearInterval(watch)
+              document.getElementById("valvo").innerHTML = vl + "%"
+              socket.emit("data",JSON.stringify({vl}))
+              cekIfValueChange()
+            }
+
+      },1)
+      }
+      cekIfValueChange()
+      let tcp = new WebSocket("ws://localhost:9998")
+
+      tcp.onopen= ()=>{
+              console.log("opening")
+              tcp.send("ahi")
+            }
+         </script>
+  </body>
+</html>
